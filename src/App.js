@@ -35,19 +35,19 @@ function App() {
 
   function addItem(e) {
     e.preventDefault();
-    const json = JSON.stringify({description:description,amount:amount});
+    const json = JSON.stringify({ description: description, amount: amount });
     axios.post(URL + 'add_item.php', json, {
       headers: {
-        "Content-Type" : "application/json"
+        "Content-Type": "application/json"
       }
     })
-    .then((response) => {
-      setItems(items => [...items,response.data]);
-      setDescription("");
-      setAmount("");
-    }).catch(error => {
-      alert(error.response ? error.response.data.error : error);
-    });
+      .then((response) => {
+        setItems(items => [...items, response.data]);
+        setDescription("");
+        setAmount("");
+      }).catch(error => {
+        alert(error.response ? error.response.data.error : error);
+      });
     document.getElementById("description").focus();
   }
 
