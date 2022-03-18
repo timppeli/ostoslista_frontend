@@ -16,6 +16,21 @@ function App() {
       });
   }, [])
 
+  function deleteItem(id) {
+    const json = JSON.stringify({id:id});
+    axios.post(URL + "delete_item.php",json,{
+      headers: {
+        "Content-Type" : "application/json"
+      }
+    })
+    .then((response) => {
+      const newListWithoutRemoved = items.filter((item) => item.id !== id);
+      setItems(newListWithoutRemoved);
+    }).catch(error => {
+      alert(error.response ? error.response.data.error : error);
+    });
+  }
+
   return (
     <div className="container">
       <h3>Shopping List</h3>
@@ -30,7 +45,7 @@ function App() {
           <li key={item.id}>
             <div>{item.description}</div>
             <div>{item.amount}</div>
-            <div><a href="#">Delete</a></div>
+            <div><a href="#" onClick={() => deleteItem(item.id)}>Delete</a></div>
           </li>
         ))}
       </ul>
