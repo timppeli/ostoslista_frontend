@@ -6,6 +6,8 @@ const URL = "http://localhost/_ostoslista/";
 
 function App() {
   const [items, setItems] = useState([]);
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
 
   useEffect(() => {
     axios.get(URL)
@@ -17,27 +19,45 @@ function App() {
   }, [])
 
   function deleteItem(id) {
-    const json = JSON.stringify({id:id});
-    axios.post(URL + "delete_item.php",json,{
+    const json = JSON.stringify({ id: id });
+    axios.post(URL + "delete_item.php", json, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+      .then((response) => {
+        const newItemList = items.filter((item) => item.id !== id);
+        setItems(newItemList);
+      }).catch(error => {
+        alert(error.response ? error.response.data.error : error);
+      });
+  }
+
+  function addItem(e) {
+    e.preventDefault();
+    const json = JSON.stringify({description:description,amount:amount});
+    axios.post(URL + 'add_item.php', json, {
       headers: {
         "Content-Type" : "application/json"
       }
     })
     .then((response) => {
-      const newListWithoutRemoved = items.filter((item) => item.id !== id);
-      setItems(newListWithoutRemoved);
+      setItems(items => [...items,response.data]);
+      setDescription("");
+      setAmount("");
     }).catch(error => {
       alert(error.response ? error.response.data.error : error);
     });
+    document.getElementById("description").focus();
   }
 
   return (
     <div className="container">
       <h3>Shopping List</h3>
-      <form>
+      <form onSubmit={addItem}>
         <label>New item: </label>
-        <input type="text" name="description" placeholder="Type description" />
-        <input type="text" name="amount" placeholder="Type amount" />
+        <input id="description" value={description} onChange={e => setDescription(e.target.value)} type="text" name="description" placeholder="Type description" />
+        <input value={amount} onChange={e => setAmount(e.target.value)} type="number" name="amount" placeholder="Type amount" />
         <input type="submit" value="Add" />
       </form>
       <ul className="items-container">
